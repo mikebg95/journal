@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  flyway:
+    clean-disabled: true
+
+logging:
+  level:
+    root: INFO
+    dev.michaelgoldman.notesbackend: INFO
+
+cors:
+  allowed-origin-pattern: ${CORS_ALLOWED_ORIGIN_PATTERN}
