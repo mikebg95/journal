@@ -1,3 +1,7 @@
 spring:
   application:
     name: notesbackend
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
