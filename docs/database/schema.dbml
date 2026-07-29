@@ -1,0 +1,43 @@
+// P3 Notes & Journal — database schema
+// Rendered at https://dbdiagram.io
+//
+// Notes:
+// - CHECK constraints and the mood enum values are enforced in Flyway migrations,
+//   not in this diagram (dbdiagram does not model CHECK constraints).
+// - Tags are shared across entries (many-to-many via entries_tags).
+// - `version` supports optimistic locking (JPA @Version).
+
+Table entries {
+  id bigint [primary key, increment]
+  version bigint [not null]
+  title varchar(100) [not null]
+  content text [not null] // CHECK (length(content) <= 20000)
+  summary varchar(500) // nullable
+  mood varchar(20) // nullable; CHECK (mood IN ('HAPPY','CALM','SAD', ...))
+  created_at timestamp [not null]
+  last_updated timestamp [not null]
+}
+
+Table tags {
+  id bigint [primary key, increment]
+  value varchar(50) [not null, unique]
+}
+
+Table entries_tags {
+  entry_id bigint [not null]
+  tag_id bigint [not null]
+
+  indexes {
+    (entry_id, tag_id) [pk]
+  }
+}
+
+Table todos {
+  id bigint [primary key, increment]
+  value varchar(1000) [not null]
+  entry_id bigint [not null]
+}
+
+Ref: todos.entry_id > entries.id
+Ref: entries_tags.entry_id > entries.id
+Ref: entries_tags.tag_id > tags.id
