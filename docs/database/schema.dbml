@@ -16,6 +16,7 @@ Table entries {
   mood varchar(20) // nullable; CHECK (mood IN ('HAPPY','CALM','SAD', ...))
   created_at timestamp [not null]
   last_updated timestamp [not null]
+  analysed_at timestamp [not null]
 }
 
 Table tags {
