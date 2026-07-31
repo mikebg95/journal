@@ -1,6 +1,6 @@
 package dev.michaelgoldman.journalbackend;
 
-import dev.michaelgoldman.journalbackend.config.ChatClientConfig;
+import dev.michaelgoldman.journalbackend.adapter.out.ai.ChatClientConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;

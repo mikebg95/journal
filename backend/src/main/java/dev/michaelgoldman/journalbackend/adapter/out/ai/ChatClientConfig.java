@@ -1,4 +1,4 @@
-package dev.michaelgoldman.journalbackend.config;
+package dev.michaelgoldman.journalbackend.adapter.out.ai;
 
 import org.springframework.ai.anthropic.AnthropicChatModel;
 import org.springframework.ai.chat.client.ChatClient;
