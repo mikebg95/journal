@@ -1,15 +1,15 @@
-package dev.michaelgoldman.notesbackend;
+package dev.michaelgoldman.journalbackend;
 
-import dev.michaelgoldman.notesbackend.config.ChatClientConfig;
+import dev.michaelgoldman.journalbackend.config.ChatClientConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import(ChatClientConfig.class)
-public class NotesbackendApplication {
+public class JournalbackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(NotesbackendApplication.class, args);
+		SpringApplication.run(JournalbackendApplication.class, args);
 	}
 }

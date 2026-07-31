@@ -10,7 +10,7 @@ spring:
 logging:
   level:
     root: INFO
-    dev.michaelgoldman.notesbackend: INFO
+    dev.michaelgoldman.journalbackend: INFO
 
 cors:
   allowed-origin-pattern: ${CORS_ALLOWED_ORIGIN_PATTERN}

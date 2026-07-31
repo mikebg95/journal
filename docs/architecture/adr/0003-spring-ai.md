@@ -18,7 +18,7 @@ The application uses **Spring AI**. It is Spring-native and integrates directly 
 
 * **LangChain4j** — For this application (a single LLM call that returns a simple structured object), LangChain4j would add unnecessary weight and breadth that the project does not use. Spring AI fits the existing Spring stack: the `ChatClient` is auto-configured from `application.yml` — add the starter, set the API key, and it is ready, with no manual wiring.
 
-* **Embabel** — Embabel is an agent framework built on top of Spring AI, concerned with multi-step, goal-driven agentic workflows. It is the **wrong layer** for this application: Notes makes a single structured LLM call, with no agent, no planning, and no multi-step goal, so Embabel would solve a problem the project does not have. Additionally, it is very new — not yet matured, with sparse documentation and a small community. (It is, however, a candidate for the later agents/MCP phase, P3.6.)
+* **Embabel** — Embabel is an agent framework built on top of Spring AI, concerned with multi-step, goal-driven agentic workflows. It is the **wrong layer** for this application: Journal makes a single structured LLM call, with no agent, no planning, and no multi-step goal, so Embabel would solve a problem the project does not have. Additionally, it is very new — not yet matured, with sparse documentation and a small community. (It is, however, a candidate for the later agents/MCP phase, P3.6.)
 
 ## Consequences
 

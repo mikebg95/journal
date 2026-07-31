@@ -1,4 +1,4 @@
-# P3 — Notes & Journal · Screen Specification
+# P3 — Journal · Screen Specification
 
 Written companion to `P3-design-system.md`. Every screen, every state, every string.
 Twenty-one frames across seven pages. Build order is the order below.

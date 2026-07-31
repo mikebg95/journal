@@ -1,6 +1,6 @@
-package dev.michaelgoldman.notesbackend;
+package dev.michaelgoldman.journalbackend;
 
-import dev.michaelgoldman.notesbackend.config.WebConfig;
+import dev.michaelgoldman.journalbackend.config.WebConfig;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;

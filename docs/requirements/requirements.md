@@ -1,4 +1,4 @@
-# Requirements — P3 Notes & Journal
+# Requirements — P3 Journal
 
 ## Functional requirements
 

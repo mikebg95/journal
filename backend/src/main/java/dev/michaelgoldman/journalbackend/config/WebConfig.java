@@ -1,4 +1,4 @@
-package dev.michaelgoldman.notesbackend.config;
+package dev.michaelgoldman.journalbackend.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

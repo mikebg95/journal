@@ -4,7 +4,7 @@
 
 ## Context
 
-A decision has to be made about synchronous vs asynchronous communication in the Notes application. The external LLM dependency is slow and can fail — it can take up to 5 seconds (or possibly more) to return a response.
+A decision has to be made about synchronous vs asynchronous communication in the Journal application. The external LLM dependency is slow and can fail — it can take up to 5 seconds (or possibly more) to return a response.
 
 The choice is whether to let the user wait, freezing the application while the LLM runs (simpler, but inferior UX), or to save the user's input immediately and let the app continue while the call runs in the background, updating the UI once the response returns (better UX, but more complex).
 

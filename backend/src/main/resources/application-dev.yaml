@@ -1,12 +1,12 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/notes}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/journal}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
 logging:
   level:
-    dev.michaelgoldman.notesbackend: DEBUG
+    dev.michaelgoldman.journalbackend: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
 

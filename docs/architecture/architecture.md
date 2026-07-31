@@ -1,4 +1,4 @@
-# Architecture — P3 Notes & Journal
+# Architecture — P3 Journal
 
 ## The seven architecture levels
 
@@ -78,7 +78,7 @@ This document walks the seven architecture decisions for P3, comparing each agai
 
 **P2:** Recipe data is held in a Recipe object, so not Transaction Script. Logic mostly lives in service methods, but some lives in the domain object (e.g. re-numbering steps when a step is added or removed). So mostly Anemic, with some rich-domain aspects.
 
-**P3:** Note data is held in a Note object, so not Transaction Script. Most logic lives in the service (AI call, find-or-create for tags, capping tag count, the save flow) — because it needs the database or the external AI, so it cannot live in an object. Some logic lives in the domain objects: `Tag.of()` cleans and validates itself (trim, lowercase, not blank), and Mood is a fixed enum. So mostly Anemic, with small rich touches — the same shape as P2.
+**P3:** Entry data is held in an Entry object, so not Transaction Script. Most logic lives in the service (AI call, find-or-create for tags, capping tag count, the save flow) — because it needs the database or the external AI, so it cannot live in an object. Some logic lives in the domain objects: `Tag.of()` cleans and validates itself (trim, lowercase, not blank), and Mood is a fixed enum. So mostly Anemic, with small rich touches — the same shape as P2.
 
 **Rejected:**
 
