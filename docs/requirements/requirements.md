@@ -29,7 +29,7 @@ One AI call per analysis, producing four things:
 | Output | Cardinality | Notes |
 |---|---|---|
 | Summary | zero or one | One sentence. Maximum 500 characters. |
-| Tags | zero or more | Capped at **5** in application code. The prompt requests a limit; the code enforces it. |
+| Tags | zero or more | Capped at **10** in application code. The prompt requests a limit; the code enforces it. |
 | Mood | zero or one | Exactly one of six fixed values, or none. |
 | To-dos | zero or more | Only what the entry *explicitly states*. No invented tasks. Each maximum 1 000 characters. |
 

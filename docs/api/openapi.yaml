@@ -1,0 +1,474 @@
+openapi: 3.1.0
+info:
+  title: Journal API
+  description: Rest API for managing journal entries, including AI-generated information about them.
+  version: 0.0.1
+servers:
+- url: http://localhost:8080/api/v1
+  description: Local server for running backend API locally.
+tags:
+- name: Entries
+  description: Create, browse, update, and delete journal entries.
+- name: Todos
+  description: Read-only aggregate of to-dos across all entries.
+- name: Tags
+  description: Read-only list of existing tags, for filtering.
+paths:
+  /entries:
+    get:
+      operationId: getEntries
+      tags: [Entries]
+      summary: Fetch entries
+      description: Returns a page containing a list of lightweight (summary) entries to be displayed on the homepage.
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: tags
+          in: query
+          required: false
+          style: form
+          explode: true
+          schema: 
+            type: array
+            items: 
+              type: string
+        - name: moods
+          in: query
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Mood'
+      responses:
+        "200": 
+          description: List of (summary) entries successfully retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryPage'
+        "400": 
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/UnexpectedError'
+    
+    post:
+      operationId: createEntry
+      tags: [Entries]
+      summary: Create new entry
+      description: Creates an entry with the given title and content. 
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEntryRequest'
+      responses:
+        "201":
+          description: Successfully created a new entry.
+          headers:
+            Location:
+              description: URI of the newly created entry.
+              required: true
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryDetailResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/UnexpectedError'
+
+  /entries/{id}:
+    parameters:
+      - $ref: '#/components/parameters/entryId'
+    get:
+      operationId: getEntryById
+      tags: [Entries]
+      summary: Fetch entry by ID
+      description: Returns full entry object, including ID, version, and AI-generated information.
+      responses:
+        "200":
+          description: Entry successfully returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryDetailResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/EntryNotFound'
+        "500":
+          $ref: '#/components/responses/UnexpectedError'
+    put:
+      operationId: updateEntryById
+      tags: [Entries]
+      summary: Update existing entry
+      description: Updates existing entry with given entry information. User can also modify AI-generated information.
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEntryRequest'
+      responses:
+        "200":
+          description: Entry successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryDetailResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/EntryNotFound'
+        "409":
+          $ref: '#/components/responses/EntryAlreadyUpdated'
+        "500":
+          $ref: '#/components/responses/UnexpectedError'
+    delete:
+      operationId: deleteEntryById
+      tags: [Entries]
+      summary: Delete existing entry
+      description: Deletes existing entry by Id.
+      responses:
+        "204":
+          description: Entry successfully deleted.
+        "400": 
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/EntryNotFound'
+        "500":
+          $ref: '#/components/responses/UnexpectedError'
+  /entries/{id}/analyse:
+    parameters:
+      - $ref: '#/components/parameters/entryId'
+    post:
+      operationId: analyseEntry
+      tags: [Entries]
+      summary: Trigger AI-analysis
+      description: (Re-)trigger AI-analysis manually.
+      responses:
+        "200":
+          description: Entry analysed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryDetailResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/EntryNotFound'
+        "500":
+          $ref: '#/components/responses/UnexpectedError'
+
+  /todos:
+    get:
+      operationId: getTodos
+      tags: [Todos]
+      summary: List to-dos
+      description: Returns a page containing a list of TodoResponses, each containing the text, entryId, entryTitle, entryMood and entryLastUpdated.
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [newest, oldest]
+            default: newest
+      responses:
+        "200":
+          description: List of Todos returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoPage'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/UnexpectedError'
+  /tags:
+    get:
+      operationId: getTags
+      tags: [Tags]
+      summary: List tags
+      description: Returns every existing tag value, alphabetically, for the filter autocomplete.
+      responses:
+        "200":
+          description: List of tag strings returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "500":
+          $ref: '#/components/responses/UnexpectedError'
+components:
+  schemas:
+    Mood:
+      type: string
+      description: The mood the AI inferred from the entry. Exactly these six values; a value the model returns that matches none of them is stored as null.
+      enum:
+        - HAPPY
+        - CALM
+        - NEUTRAL
+        - ANXIOUS
+        - SAD
+        - FRUSTRATED
+    AnalysisStatus:
+      type: string
+      description: The status of the AI-analysis of the entry by the LLM model. Either analysed, not analysed, or out of date (meaning the user has updated the content of the entry after the previous analysis).
+      enum: 
+        - NOT_ANALYSED
+        - ANALYSED
+        - OUT_OF_DATE
+    ProblemDetail:
+      type: object
+      description: RFC 9457 problem details object returned for all error responses.
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri
+          description: A URI reference identifying the problem type.
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type.
+        status:
+          type: integer
+          format: int32
+          description: The HTTP status code for this occurrence of the problem.
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem.
+        instance:
+          type: string
+          format: uri
+          description: A URI reference identifying this specific occurrence of the problem.
+    EntryPage:
+      type: object
+      description: Page object that contains list of EntrySummaryResponses.
+      required: [content, page, size, totalElements, totalPages]
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntrySummaryResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+    EntrySummaryResponse:
+      type: object
+      description: The object that is rendered as a row on the Homepage, containing id, title, summary, mood, tags, todosCount, lastUpdated and analysisStatus.
+      required: [id, title, summary, mood, tags, todosCount, lastUpdated, analysisStatus]
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        summary:
+          type: [string, 'null']
+        mood:
+          anyOf:
+            - $ref: '#/components/schemas/Mood'
+            - type: 'null'
+        tags:
+          type: array
+          items:
+            type: string
+        todosCount:
+          type: integer
+          minimum: 0
+        lastUpdated:
+          type: string
+          format: date-time
+        analysisStatus:
+          $ref: '#/components/schemas/AnalysisStatus'
+    CreateEntryRequest:
+      type: object
+      description: The object that is passed by the user when creating a new entry. Contains only title and content.
+      required: [title, content]
+      properties:
+        title: 
+          description: Required. 1-100 characters. Must not be blank; leading and trailing whitespace is trimmed.
+          type: string
+          maxLength: 100
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        content:
+          description: Required. 1-20000 characters. Must not be blank; leading and trailing whitespace is trimmed.
+          type: string
+          maxLength: 20000
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+    EntryDetailResponse:
+      type: object
+      description: Full entry object that is rendered on the entry details page.
+      required: [id, version, title, content, summary, mood, tags, todos, createdAt, lastUpdated, analysisStatus]
+      properties:
+        id:
+          type: integer
+          format: int64
+        version:
+          type: integer
+          format: int64
+        title:
+          type: string
+        content:
+          type: string
+        summary:
+          type: [string, 'null']
+        mood:
+          anyOf:
+            - $ref: '#/components/schemas/Mood'
+            - type: 'null'
+        tags:
+          type: array
+          items:
+            type: string
+        todos:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        lastUpdated:
+          type: string
+          format: date-time
+        analysisStatus:
+          $ref: '#/components/schemas/AnalysisStatus'
+    UpdateEntryRequest:
+      type: object
+      description: Object that is sent when updating an existing entry. Includes version, title, content, summary, mood, tags, todos.
+      required: [version, title, content, tags, todos]
+      properties:
+        version:
+          type: integer
+          format: int64
+          minimum: 0
+        title:
+          type: string
+          maxLength: 100
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        content:
+          type: string
+          maxLength: 20000
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        summary:
+          type: [string, 'null']
+          maxLength: 500
+        mood:
+          anyOf:
+            - $ref: '#/components/schemas/Mood'
+            - type: 'null'
+        tags:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            maxLength: 50
+        todos:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            maxLength: 1000
+    TodoPage:
+      type: object
+      description: Page object that is returned contains list of TodoResponses.
+      required: [content, page, size, totalElements, totalPages]
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/TodoResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+    TodoResponse:
+      type: object
+      description: To-do object that is rendered as a row on the to-dos page. Contains text, entryId, entryTitle, entryMood, and entryLastUpdated.
+      required: [text, entryId, entryTitle, entryMood, entryLastUpdated]
+      properties:
+        text:
+          type: string
+        entryId:
+          type: integer
+          format: int64
+        entryTitle:
+          type: string
+        entryMood:
+          anyOf:
+            - $ref: '#/components/schemas/Mood'
+            - type: 'null'
+        entryLastUpdated:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequest:
+      description: Bad request. Either an invalid path variable was provided, or an invalid request body was provided, or an invalid query param was provided.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    UnexpectedError:
+      description: Unexpected Server Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    EntryNotFound:
+      description: Entry not found
+      content:
+        application/problem+json:
+          schema: 
+            $ref: '#/components/schemas/ProblemDetail'
+    EntryAlreadyUpdated:
+      description: Entry already updated in the meantime
+      content:
+        application/problem+json:
+          schema: 
+            $ref: '#/components/schemas/ProblemDetail'
+  parameters:
+    entryId:
+      name: id
+      in: path
+      description: Unique Identifier of the journal entry
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1

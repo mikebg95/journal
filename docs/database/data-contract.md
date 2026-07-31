@@ -8,8 +8,8 @@
 2. Trim start & end
 3. Collapse inner whitespace runs (spaces/tabs) → single space
 4. Lowercase
-5. If empty now → REJECTED
-6. If length > 50 → REJECTED
+5. If empty now → DROP this tag from the list (not rejected)
+6. If length > 50 → DROP this tag from the list (over-length AI output is discarded, not rejected — graceful degradation)
 7. Uniqueness (no duplicates) → enforced by DB
 
 ### Title (order matters)
@@ -31,8 +31,8 @@
 1. NFC normalise
 2. Trim start & end
 3. Collapse inner whitespace runs (spaces/tabs) → single space
-4. If empty or null → ALLOWED (nullable)
-5. If length > 500 → REJECTED
+4. If empty or null → null (ALLOWED, nullable)
+5. If length > 500 → null (over-length AI output is discarded, not rejected — graceful degradation)
 
 ### Mood (order matters)
 
@@ -52,7 +52,7 @@
 2. Trim start & end
 3. Collapse inner whitespace runs (spaces/tabs) → single space
 4. If empty → drop this todo from the list (do not store empty items)
-5. If length > 1000 → REJECTED
+5. If length > 1000 → drop this todo from the list (not rejected — graceful degradation)
 
 The todo *list* itself may be empty (ALLOWED) — e.g. when the entry states no explicit todos.
 
@@ -69,4 +69,8 @@ The todo *list* itself may be empty (ALLOWED) — e.g. when the entry states no 
 | tags | list may be empty |
 | todos | list may be empty |
 
-**The principle:** user input (title, content) is required — empty is rejected. AI output (summary, mood, tags, todos) is optional — empty/null is allowed, because the AI may not have run (graceful degradation, ADR-0005).
+**The principle — two axes.**
+
+*Required vs optional.* User input (title, content) is required — empty is rejected. AI output (summary, mood, tags, todos) is optional — empty / null / empty-list is allowed, because the AI may not have run (graceful degradation, ADR-0005).
+
+*Reject vs clean, by entry point.* This document is the **domain** contract, and the domain is single-path and graceful: it never *rejects* an AI-output field, it *cleans* it (over-length → null or dropped, invalid → dropped). Hard rejection of summary / tags / todos happens one layer up, at the **request boundary**, and only on the **edit** path — where a human is sending the field and can act on a 400. The analysis path carries no request validation for these fields (the model fills them server-side), so domain cleaning is the only enforcement before the DB. See `field-validation.md` for the request / domain / DB split.
