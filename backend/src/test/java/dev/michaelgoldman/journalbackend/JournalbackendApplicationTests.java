@@ -2,7 +2,7 @@ package dev.michaelgoldman.journalbackend;
 
 import org.junit.jupiter.api.Test;
 
-class JournalbackendApplicationTests extends AbstractIntegrationTest {
+class JournalbackendApplicationIT extends AbstractIntegrationTest {
 
 	@Test
 	void contextLoads() {

@@ -8,5 +8,5 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles("test")
 @Import({TestcontainersConfiguration.class, WebConfig.class})
-public class AbstractIntegrationTest {
+abstract class AbstractIntegrationTest {
 }
