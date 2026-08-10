@@ -11,12 +11,12 @@ Table entries {
   id bigint [primary key, increment]
   version bigint [not null]
   title varchar(100) [not null]
-  content text [not null] // CHECK (length(content) <= 20000)
+  content varchar(20000) [not null]
   summary varchar(500) // nullable
   mood varchar(20) // nullable; CHECK (mood IN ('HAPPY','CALM','SAD', ...))
-  created_at timestamp [not null]
-  last_updated timestamp [not null]
-  analysed_at timestamp
+  created_at timestamptz [not null]
+  last_updated timestamptz [not null]
+  analysed_at timestamptz
 }
 
 Table tags {
