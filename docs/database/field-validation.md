@@ -11,7 +11,7 @@ The rule of thumb: **reject when a human is watching, clean when the model is.**
 | Field | Rules | Enforced in request | Enforced in domain | Enforced in DB |
 |---|---|---|---|---|
 | **title** | not null/blank/empty; ≤ 100 | `@NotBlank`, `@Size(100)` (both DTOs) | Trim whitespace (outer); NFC normalisation | `NOT NULL`, `VARCHAR(100)` |
-| **content** | not null/blank/empty; ≤ 20000 | `@NotBlank`, `@Size(20000)` (both DTOs) | Trim whitespace (outer); NFC normalisation | `NOT NULL`, `VARCHAR(20000)` |
+| **content** | not null/blank/empty; ≤ 20000 | `@NotBlank`, `@Size(20000)` (both DTOs) | Trim whitespace (outer); NFC normalisation | `NOT NULL`, `TEXT`, `CHECK (length(content) <= 20000)` |
 | **summary** | over-length rejected on edit; empty → null; null allowed; ≤ 500 | Edit DTO: `@Size(max = 500)`. Not on create DTO. | Trim (outer); collapse inner whitespace runs; NFC; if empty/blank → null; if length > 500 → null | `VARCHAR(500)`, nullable |
 | **mood** | not blank/empty → becomes null; null allowed; enum check (one of six values or null) | — | Trim (outer); collapse inner whitespace runs; NFC; uppercase; if empty/blank → null; check enum allowed (else null) | `VARCHAR(20)`, `CHECK (mood IN ('HAPPY','CALM',...))`, nullable |
 | **tag** | over-length rejected on edit; empty → dropped; ≤ 50; unique | Edit DTO: `@Size(max = 50)` per item. Not on create DTO. | Trim (outer); collapse inner whitespace runs; NFC; lowercase; if empty/blank/null → remove; if length > 50 → remove | `NOT NULL`, `VARCHAR(50)`, `UNIQUE` |

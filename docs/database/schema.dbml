@@ -11,7 +11,7 @@ Table entries {
   id bigint [primary key, increment]
   version bigint [not null]
   title varchar(100) [not null]
-  content varchar(20000) [not null]
+  content text [not null] // CHECK (length(content) <= 20000)
   summary varchar(500) // nullable
   mood varchar(20) // nullable; CHECK (mood IN ('HAPPY','CALM','SAD', ...))
   created_at timestamptz [not null]
