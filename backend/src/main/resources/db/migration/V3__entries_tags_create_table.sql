@@ -9,3 +9,5 @@ CREATE TABLE entries_tags (
         FOREIGN KEY (tag_id) REFERENCES tags (id)
             ON DELETE RESTRICT
 );
+
+CREATE INDEX idx_entries_tags_tag_id ON entries_tags (tag_id);
