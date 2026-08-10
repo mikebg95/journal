@@ -1,4 +1,4 @@
-package dev.michaelgoldman.journalbackend.config;
+package dev.michaelgoldman.journalbackend.adapter.in.web;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -10,8 +10,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    @Value("${cors.allowed-origin-pattern}")
-    private String allowedOriginPattern;
+    private final String allowedOriginPattern;
+
+    WebConfig(@Value("${cors.allowed-origin-pattern}") String allowedOriginPattern) {
+        this.allowedOriginPattern = allowedOriginPattern;
+    }
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {

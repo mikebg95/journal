@@ -1,7 +1,7 @@
 # Warm Graphite — Design System
 
 The design system for the Dev Master Plan portfolio. Dual theme, light and dark.
-Established in P2 (Recipe Book), applied to P3 (Notes & Journal) and onward.
+Established in P2 (Recipe Book), applied to P3 (Journal) and onward.
 
 This document is the source of truth. Where an implementation disagrees with it, the implementation is wrong.
 

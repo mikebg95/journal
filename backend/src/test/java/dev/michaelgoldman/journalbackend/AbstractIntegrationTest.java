@@ -1,6 +1,6 @@
 package dev.michaelgoldman.journalbackend;
 
-import dev.michaelgoldman.journalbackend.config.WebConfig;
+import dev.michaelgoldman.journalbackend.adapter.in.web.WebConfig;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
