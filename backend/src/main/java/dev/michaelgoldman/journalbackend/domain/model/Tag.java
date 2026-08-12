@@ -13,15 +13,13 @@ public record Tag(String value) {
 
     public Tag {
         if (value == null || !value.equals(clean(value)) || value.isBlank() || value.length() > CHAR_LIMIT) {
-            throw new IllegalArgumentException("Tag value is not canonical");
+            throw new IllegalArgumentException("Tag text is not canonical");
         }
     }
 
     public static Optional<Tag> of(@Nullable String unclean) {
         if (unclean == null) return Optional.empty();
-
         String cleaned = clean(unclean);
-
         if (cleaned.isBlank() || cleaned.length() > CHAR_LIMIT) return Optional.empty();
 
         return Optional.of(new Tag(cleaned));

@@ -12,40 +12,35 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-class TagTest {
-    private static final int TAG_CHAR_LIMIT = 50;
+class TodoTest {
+    private static final int TODO_CHAR_LIMIT = 1000;
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("uncleanValues")
-    void whenUncleanTagPassed_shouldCleanTag(String name, String clean, String unclean) {
-        assertEquals(clean, Tag.of(unclean).orElseThrow().value());
+    void whenUncleanTodoPassed_shouldCleanTodo(String name, String clean, String unclean) {
+        assertEquals(clean, Todo.of(unclean).orElseThrow().text());
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("blankValues")
-    void whenBlankTagPassed_shouldReturnEmptyOptional(String name, String passed) {
-        assertTrue(Tag.of(passed).isEmpty());
+    void whenBlankTodoPassed_shouldReturnEmptyOptional(String name, String passed) {
+        assertTrue(Todo.of(passed).isEmpty());
     }
 
     @Test
-    void whenTagExceedsCharLimit_shouldReturnEmptyOptional() {
-        String atLimit = "a".repeat(TAG_CHAR_LIMIT);
-        String tooLong = "a".repeat(TAG_CHAR_LIMIT + 1);
-        String paddedButValid = " ".repeat(100) + "work" + " ".repeat(20);
+    void whenTodoExceedsCharLimit_shouldReturnEmptyOptional() {
+        String atLimit = "a".repeat(TODO_CHAR_LIMIT);
+        String tooLong = "a".repeat(TODO_CHAR_LIMIT + 1);
+        String paddedButValid = " ".repeat(1050) + "Clean up the house" + " ".repeat(30);
 
-        assertTrue(Tag.of(atLimit).isPresent());
-        assertTrue(Tag.of(paddedButValid).isPresent());
-        assertTrue(Tag.of(tooLong).isEmpty());
-    }
-
-    @Test
-    void whenTagsShareCanonicalValue_shouldBeEqual() {
-        assertEquals(Tag.of("clean up"), Tag.of("  ClEAn   \tUP "));
+        assertTrue(Todo.of(atLimit).isPresent());
+        assertTrue(Todo.of(paddedButValid).isPresent());
+        assertTrue(Todo.of(tooLong).isEmpty());
     }
 
     @Test
     void whenConstructedWithNonCanonicalValue_shouldThrow() {
-        assertThrows(IllegalArgumentException.class, () -> new Tag("  GYM "));
+        assertThrows(IllegalArgumentException.class, () -> new Todo("  Clean up the house "));
     }
 
     @SuppressWarnings("UnnecessaryUnicodeEscape")
@@ -58,23 +53,18 @@ class TagTest {
                 ),
                 arguments(
                         "Trim start and end",
-                        "work",
-                        "   work   "
+                        "Go to work",
+                        "   Go to work   "
                 ),
                 arguments(
                         "Collapse inner whitespace (multiple spaces)",
-                        "clean up",
-                        "clean     up"
+                        "Clean up the house",
+                        "Clean     up  the    house"
                 ),
                 arguments(
                         "Collapse inner whitespace (tab)",
-                        "clean up",
-                        "clean\tup"
-                ),
-                arguments(
-                        "Case normalisation",
-                        "gym",
-                        "GYM"
+                        "Clean up the house",
+                        "Clean  \t  up    the \thouse"
                 )
         );
     }
