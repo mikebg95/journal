@@ -36,6 +36,7 @@ class ArchitectureTest {
     private static final String OUTBOUND_ADAPTERS = ROOT + ".adapter.out..";
     private static final String GENERATED_API = ROOT + ".api..";
     private static final String JDK = "java..";
+    private static final String NULLNESS = "org.jspecify.annotations..";
 
     private static final String SPRING_TRANSACTIONAL = "org.springframework.transaction.annotation.Transactional";
     private static final String JAKARTA_TRANSACTIONAL = "jakarta.transaction.Transactional";
@@ -72,7 +73,7 @@ class ArchitectureTest {
     static final ArchRule domain_should_only_depend_on_itself_and_the_jdk =
             classes()
                     .that().resideInAPackage(DOMAIN)
-                    .should().onlyDependOnClassesThat().resideInAnyPackage(DOMAIN, JDK)
+                    .should().onlyDependOnClassesThat().resideInAnyPackage(DOMAIN, JDK, NULLNESS)
                     .allowEmptyShould(true);
 
     /**
@@ -85,7 +86,7 @@ class ArchitectureTest {
     static final ArchRule application_should_only_depend_on_domain_and_the_jdk =
             classes()
                     .that().resideInAPackage(APPLICATION)
-                    .should().onlyDependOnClassesThat().resideInAnyPackage(DOMAIN, APPLICATION, JDK)
+                    .should().onlyDependOnClassesThat().resideInAnyPackage(DOMAIN, APPLICATION, JDK, NULLNESS)
                     .allowEmptyShould(true);
 
     /**

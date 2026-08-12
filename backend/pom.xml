@@ -178,7 +178,7 @@
 					<compilerArgs>
 						<arg>-XDcompilePolicy=simple</arg>
 						<arg>--should-stop=ifError=FLOW</arg>
-						<arg>-Xplugin:ErrorProne -XepDisableWarningsInGeneratedCode -XepOpt:NullAway:AnnotatedPackages=dev.michaelgoldman.journalbackend -XepOpt:NullAway:TreatGeneratedAsUnannotated=true</arg>
+						<arg>-Xplugin:ErrorProne -XepDisableWarningsInGeneratedCode -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=dev.michaelgoldman.journalbackend -XepOpt:NullAway:TreatGeneratedAsUnannotated=true</arg>
 						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
 						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
 						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
