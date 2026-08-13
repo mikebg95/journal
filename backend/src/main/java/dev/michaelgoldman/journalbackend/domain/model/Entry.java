@@ -3,11 +3,14 @@ package dev.michaelgoldman.journalbackend.domain.model;
 import java.text.Normalizer;
 import java.util.Objects;
 
-public record Entry(String title, String content) {
+public final class Entry {
     private static final int TITLE_CHAR_LIMIT = 100;
     private static final int CONTENT_CHAR_LIMIT = 20000;
 
-    public Entry {
+    private final String title;
+    private final String content;
+
+    public Entry(String title, String content) {
         Objects.requireNonNull(title, "title");
         Objects.requireNonNull(content, "content");
 
@@ -18,6 +21,9 @@ public record Entry(String title, String content) {
         if (!content.equals(clean(content)) || content.isBlank() || content.length() > CONTENT_CHAR_LIMIT) {
             throw new IllegalArgumentException("Entry content is not canonical");
         }
+
+        this.title = title;
+        this.content = content;
     }
 
     public static Entry of(String uncleanTitle, String uncleanContent) {
@@ -32,5 +38,13 @@ public record Entry(String title, String content) {
 
     private static String clean(String unclean) {
         return Normalizer.normalize(unclean, Normalizer.Form.NFC).strip();
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContent() {
+        return content;
     }
 }

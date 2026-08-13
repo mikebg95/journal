@@ -1,12 +1,14 @@
 package dev.michaelgoldman.journalbackend.domain.model;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.Locale;
 import java.util.Optional;
 
 public enum Mood {
     HAPPY, CALM, NEUTRAL, ANXIOUS, SAD, FRUSTRATED;
 
-    public static Optional<Mood> from(String raw) {
+    public static Optional<Mood> from(@Nullable String raw) {
         if (raw == null) {
             return Optional.empty();
         }

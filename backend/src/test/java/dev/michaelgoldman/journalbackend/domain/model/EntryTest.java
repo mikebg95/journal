@@ -21,8 +21,8 @@ class EntryTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("uncleanValues")
     void whenUncleanTitleOrContentPassed_shouldCleanValue(String name, String clean, String unclean) {
-        assertEquals(clean, Entry.of(unclean, VALID_CONTENT).title());
-        assertEquals(clean, Entry.of(VALID_TITLE, unclean).content());
+        assertEquals(clean, Entry.of(unclean, VALID_CONTENT).getTitle());
+        assertEquals(clean, Entry.of(VALID_TITLE, unclean).getContent());
     }
 
     @ParameterizedTest(name = "{0}")
@@ -64,7 +64,7 @@ class EntryTest {
     void whenContentHasParagraphs_shouldKeepThem() {
         String prose = "First paragraph.\n\nSecond paragraph.";
 
-        assertEquals(prose, Entry.of(VALID_TITLE, "  " + prose + "  ").content());
+        assertEquals(prose, Entry.of(VALID_TITLE, "  " + prose + "  ").getContent());
     }
 
     @SuppressWarnings("UnnecessaryUnicodeEscape")

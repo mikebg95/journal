@@ -4,13 +4,21 @@
 
 ### Tags (order matters)
 
+**For each tag:**
+
 1. NFC normalise → `Normalizer.normalize(input, Form.NFC)`
 2. Trim start & end
 3. Collapse inner whitespace runs (spaces/tabs) → single space
 4. Lowercase
 5. If empty now → DROP this tag from the list (not rejected)
 6. If length > 50 → DROP this tag from the list (over-length AI output is discarded, not rejected — graceful degradation)
-7. Uniqueness (no duplicates) → enforced by DB
+
+**Then, on the list as a whole:**
+
+7. Remove duplicates — two tags with the same canonical value are the same tag. Enforced in the domain *and* by a unique index in the DB, because tags are shared and found-or-create runs concurrently.
+8. If more than 10 remain → keep the first 10, drop the rest
+
+Step 7 must run **before** step 8. Capping first lets duplicates use up slots and silently drops good tags.
 
 ### Title (order matters)
 
@@ -46,13 +54,22 @@
    2. If doesn't match → null
 7. (done — mood is either one of 6, or null)
 
-### Todos (order matters) → for each todo:
+### Todos (order matters)
+
+**For each todo:**
 
 1. NFC normalise
 2. Trim start & end
 3. Collapse inner whitespace runs (spaces/tabs) → single space
 4. If empty → drop this todo from the list (do not store empty items)
 5. If length > 1000 → drop this todo from the list (not rejected — graceful degradation)
+
+**Then, on the list as a whole:**
+
+6. Remove exact duplicates, keeping the first occurrence. The same cleaned text twice inside one entry is the model repeating itself, not two tasks — a cleaning rule, not a claim that todos have identity. Domain only; no DB constraint, because todos are owned by one entry, written through a single path, and a duplicate is cosmetic rather than corrupting.
+7. If more than 20 remain → keep the first 20, drop the rest
+
+Step 6 must run **before** step 7, for the same reason as tags.
 
 The todo *list* itself may be empty (ALLOWED) — e.g. when the entry states no explicit todos.
 
