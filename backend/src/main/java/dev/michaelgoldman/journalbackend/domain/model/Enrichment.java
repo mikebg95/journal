@@ -2,17 +2,14 @@ package dev.michaelgoldman.journalbackend.domain.model;
 
 import org.jspecify.annotations.Nullable;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 public record Enrichment(@Nullable String summary, Set<Tag> tags, List<Todo> todos, @Nullable Mood mood) {
 
-    private static final Pattern WHITESPACE_RUN = Pattern.compile("\\s+");
     private static final int SUMMARY_CHAR_LIMIT = 500;
     private static final int TAGS_LIMIT = 10;
     private static final int TODOS_LIMIT = 20;
@@ -41,14 +38,16 @@ public record Enrichment(@Nullable String summary, Set<Tag> tags, List<Todo> tod
         return new Enrichment(summary, tags, todos, mood);
     }
 
+    public static Enrichment empty() {
+        return new Enrichment(null, Set.of(), List.of(), null);
+    }
+
     private static @Nullable String cleanSummary(@Nullable String uncleanSummary) {
         if (uncleanSummary == null) {
             return null;
         }
 
-        String cleaned = WHITESPACE_RUN.matcher(
-                        Normalizer.normalize(uncleanSummary, Normalizer.Form.NFC).strip())
-                .replaceAll(" ");
+        String cleaned = TextNormaliser.toSingleLine(uncleanSummary);
 
         if (cleaned.isBlank() || cleaned.length() > SUMMARY_CHAR_LIMIT) {
             return null;

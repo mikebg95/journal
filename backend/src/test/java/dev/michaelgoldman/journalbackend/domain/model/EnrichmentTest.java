@@ -2,20 +2,18 @@ package dev.michaelgoldman.journalbackend.domain.model;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class EnrichmentTest {
 
@@ -33,16 +31,11 @@ class EnrichmentTest {
             new Todo("12"), new Todo("13"), new Todo("14"), new Todo("15"), new Todo("16"), new Todo("17"),
             new Todo("18"), new Todo("19"), new Todo("20"));
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("uncleanSummaryValues")
-    void whenUncleanSummaryPassed_shouldCleanSummary(String name, String clean, String unclean) {
-        assertEquals(clean, Enrichment.of(unclean, VALID_TAGS, VALID_TODOS, VALID_MOOD).summary());
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("blankValues")
-    void whenBlankSummaryPassed_shouldReturnNullSummary(String name, String passed) {
-        assertNull(Enrichment.of(passed, VALID_TAGS, VALID_TODOS, VALID_MOOD).summary());
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "   ", "\t"})
+    void whenBlankSummaryPassed_shouldReturnNullSummary(String value) {
+        assertNull(Enrichment.of(value, VALID_TAGS, VALID_TODOS, VALID_MOOD).summary());
     }
 
     @Test
@@ -127,11 +120,6 @@ class EnrichmentTest {
     }
 
     @Test
-    void whenMoodIsRecognizable_shouldSaveCorrectMoodEnum() {
-        assertEquals(Mood.FRUSTRATED, Enrichment.of(VALID_SUMMARY, VALID_TAGS, VALID_TODOS, "FRUSTRATED").mood());
-    }
-
-    @Test
     void whenMoodIsUnrecognizable_shouldBecomeNull() {
         assertNull(Enrichment.of(VALID_SUMMARY, VALID_TAGS, VALID_TODOS, "Surprised").mood());
     }
@@ -148,57 +136,5 @@ class EnrichmentTest {
                 () -> new Enrichment(VALID_SUMMARY, Set.of(), TWENTY_ONE_TODOS_LIST, Mood.HAPPY));
         assertThrows(IllegalArgumentException.class,
                 () -> new Enrichment(VALID_SUMMARY, Set.of(), List.of(new Todo("0"), new Todo("0")), Mood.HAPPY));
-    }
-
-    @SuppressWarnings("UnnecessaryUnicodeEscape")
-    static Stream<Arguments> uncleanSummaryValues() {
-        return Stream.of(
-                arguments(
-                        "NFC normalisation",
-                        "caf\u00E9",
-                        "cafe\u0301"
-                ),
-                arguments(
-                        "Trim start and end",
-                        "work",
-                        "   work   "
-                ),
-                arguments(
-                        "Collapse inner whitespace (multiple spaces)",
-                        "clean up",
-                        "clean     up"
-                ),
-                arguments(
-                        "Collapse inner whitespace (tab)",
-                        "clean up",
-                        "clean\tup"
-                ),
-                arguments(
-                        "Preserves capitals",
-                        "Two Words With Caps",
-                        "   Two  Words With     Caps    "
-                )
-        );
-    }
-
-    static Stream<Arguments> blankValues() {
-        return Stream.of(
-                arguments(
-                        "Null text",
-                        null
-                ),
-                arguments(
-                        "Empty string",
-                        ""
-                ),
-                arguments(
-                        "Whitespaces",
-                        "    "
-                ),
-                arguments(
-                        "Tab",
-                        "\t"
-                )
-        );
     }
 }

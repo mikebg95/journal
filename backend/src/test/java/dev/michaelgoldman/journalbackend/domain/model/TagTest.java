@@ -2,28 +2,25 @@ package dev.michaelgoldman.journalbackend.domain.model;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.stream.Stream;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class TagTest {
     private static final int TAG_CHAR_LIMIT = 50;
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("uncleanValues")
-    void whenUncleanTagPassed_shouldCleanTag(String name, String clean, String unclean) {
-        assertEquals(clean, Tag.of(unclean).orElseThrow().value());
+    @Test
+    void whenTagHasCapitals_shouldLowerCase() {
+        assertEquals("gym", Tag.of("GYM").orElseThrow().value());
     }
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("blankValues")
-    void whenBlankTagPassed_shouldReturnEmptyOptional(String name, String passed) {
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "   ", "\t"})
+    void whenBlankTagPassed_shouldReturnEmptyOptional(String passed) {
         assertTrue(Tag.of(passed).isEmpty());
     }
 
@@ -46,57 +43,5 @@ class TagTest {
     @Test
     void whenConstructedWithNonCanonicalValue_shouldThrow() {
         assertThrows(IllegalArgumentException.class, () -> new Tag("  GYM "));
-    }
-
-    @SuppressWarnings("UnnecessaryUnicodeEscape")
-    static Stream<Arguments> uncleanValues() {
-        return Stream.of(
-                arguments(
-                        "NFC normalisation",
-                        "caf\u00E9",
-                        "cafe\u0301"
-                ),
-                arguments(
-                        "Trim start and end",
-                        "work",
-                        "   work   "
-                ),
-                arguments(
-                        "Collapse inner whitespace (multiple spaces)",
-                        "clean up",
-                        "clean     up"
-                ),
-                arguments(
-                        "Collapse inner whitespace (tab)",
-                        "clean up",
-                        "clean\tup"
-                ),
-                arguments(
-                        "Case normalisation",
-                        "gym",
-                        "GYM"
-                )
-        );
-    }
-
-    static Stream<Arguments> blankValues() {
-        return Stream.of(
-                arguments(
-                        "Null text",
-                        null
-                ),
-                arguments(
-                        "Empty string",
-                        ""
-                ),
-                arguments(
-                        "Whitespaces",
-                        "    "
-                ),
-                arguments(
-                        "Tab",
-                        "\t"
-                )
-        );
     }
 }

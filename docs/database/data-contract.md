@@ -46,13 +46,12 @@ Step 7 must run **before** step 8. Capping first lets duplicates use up slots an
 
 1. If empty → make null
 2. If null → ALLOWED
-3. NFC normalise
-4. Trim start & end
-5. Make uppercase
-6. Match against 6 values (ENUM)
+3. Trim start & end
+4. Make uppercase
+5. Match against 6 values (ENUM)
    1. If matches one → use it
    2. If doesn't match → null
-7. (done — mood is either one of 6, or null)
+6. (done — mood is either one of 6, or null)
 
 ### Todos (order matters)
 
