@@ -267,6 +267,15 @@ components:
           type: string
           format: uri
           description: A URI reference identifying this specific occurrence of the problem.
+    VersionConflictProblemDetail:
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetail'
+      - type: object
+        required: [currentVersion]
+        properties:
+          currentVersion:
+            type: integer
+            format: int64
     EntryPage:
       type: object
       description: Page object that contains list of EntrySummaryResponses.
@@ -461,7 +470,7 @@ components:
       content:
         application/problem+json:
           schema: 
-            $ref: '#/components/schemas/ProblemDetail'
+            $ref: '#/components/schemas/VersionConflictProblemDetail'
   parameters:
     entryId:
       name: id
