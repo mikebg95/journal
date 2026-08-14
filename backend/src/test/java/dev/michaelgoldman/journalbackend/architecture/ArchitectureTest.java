@@ -66,30 +66,26 @@ class ArchitectureTest {
             .adapter("ai", AI_ADAPTER)
             .withOptionalLayers(true);
 
-    // TODO(phase-4): drop allowEmptyShould once the domain model exists
     @ArchTest
     static final ArchRule domain_should_only_depend_on_itself_and_the_jdk = classes()
             .that()
             .resideInAPackage(DOMAIN)
             .should()
             .onlyDependOnClassesThat()
-            .resideInAnyPackage(DOMAIN, JDK, NULLNESS)
-            .allowEmptyShould(true);
+            .resideInAnyPackage(DOMAIN, JDK, NULLNESS);
 
     /**
      * Deliberately narrower than the domain rule, and widened one package at a time:
      * application services are Spring beans, so they will need the stereotype annotations
      * and nothing else.
      */
-    // TODO(phase-4): drop allowEmptyShould once the application services exist
     @ArchTest
     static final ArchRule application_should_only_depend_on_domain_and_the_jdk = classes()
             .that()
             .resideInAPackage(APPLICATION)
             .should()
             .onlyDependOnClassesThat()
-            .resideInAnyPackage(DOMAIN, APPLICATION, JDK, NULLNESS)
-            .allowEmptyShould(true);
+            .resideInAnyPackage(DOMAIN, APPLICATION, JDK, NULLNESS);
 
     /**
      * Sliced at the first level below the root, so domain / application / adapter are the units.
@@ -191,4 +187,35 @@ class ArchitectureTest {
 
     @ArchTest
     static final ArchRule generic_exceptions_should_not_be_thrown = NO_CLASSES_SHOULD_THROW_GENERIC_EXCEPTIONS;
+
+    @ArchTest
+    static final ArchRule legacy_date_and_time_classes_should_not_be_used = noClasses()
+            .should()
+            .dependOnClassesThat()
+            .haveFullyQualifiedName("java.util.Date")
+            .orShould()
+            .dependOnClassesThat()
+            .haveFullyQualifiedName("java.util.Calendar")
+            .orShould()
+            .dependOnClassesThat()
+            .haveFullyQualifiedName("java.sql.Timestamp")
+            .orShould()
+            .dependOnClassesThat()
+            .haveFullyQualifiedName("java.text.SimpleDateFormat");
+
+    /**
+     * Throwable rather than RuntimeException, so a checked exception declared in an adapter
+     * is caught too. Adapters translate infrastructure failures into the core's exception
+     * types; they never invent their own.
+     */
+    // TODO(phase-5): drop allowEmptyShould once domain/exception is populated
+    @ArchTest
+    static final ArchRule custom_exceptions_should_live_in_the_domain = classes()
+            .that()
+            .areAssignableTo(Throwable.class)
+            .and()
+            .resideInAPackage(ROOT + "..")
+            .should()
+            .resideInAPackage(ROOT + ".domain.exception..")
+            .allowEmptyShould(true);
 }
