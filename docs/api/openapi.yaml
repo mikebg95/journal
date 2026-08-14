@@ -268,14 +268,17 @@ components:
           format: uri
           description: A URI reference identifying this specific occurrence of the problem.
     VersionConflictProblemDetail:
+      description: Body of the 409 returned when an update is submitted against a stale version. Carries the version currently stored, so the client can resolve the conflict without an extra request.
       allOf:
       - $ref: '#/components/schemas/ProblemDetail'
       - type: object
         required: [currentVersion]
         properties:
           currentVersion:
+            description: The version currently stored. Resubmit with this value to overwrite the newer change.
             type: integer
             format: int64
+            minimum: 0
     EntryPage:
       type: object
       description: Page object that contains list of EntrySummaryResponses.
