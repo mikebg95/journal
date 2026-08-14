@@ -159,13 +159,15 @@ class ArchitectureTest {
             .allowEmptyShould(true);
 
     @ArchTest
-    static final ArchRule ports_should_only_contain_interfaces_and_records = classes()
+    static final ArchRule ports_should_only_contain_interfaces_and_records_and_enums = classes()
             .that()
             .resideInAPackage(PORTS)
             .should()
             .beInterfaces()
             .orShould()
-            .beRecords();
+            .beRecords()
+            .orShould()
+            .beEnums();
 
     // TODO(phase-5): drop allowEmptyShould once the persistence adapter exists
     @ArchTest
