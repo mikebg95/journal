@@ -162,10 +162,14 @@ class ArchitectureTest {
             .bePublic()
             .allowEmptyShould(true);
 
-    // TODO(phase-4): drop allowEmptyShould once the ports exist
     @ArchTest
-    static final ArchRule ports_should_be_interfaces =
-            classes().that().resideInAPackage(PORTS).should().beInterfaces().allowEmptyShould(true);
+    static final ArchRule ports_should_only_contain_interfaces_and_records = classes()
+            .that()
+            .resideInAPackage(PORTS)
+            .should()
+            .beInterfaces()
+            .orShould()
+            .beRecords();
 
     // TODO(phase-5): drop allowEmptyShould once the persistence adapter exists
     @ArchTest
