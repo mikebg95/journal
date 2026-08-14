@@ -75,8 +75,8 @@ public final class Entry {
     }
 
     public static Entry fromStorage(
-            Long id,
-            Long version,
+            long id,
+            long version,
             String title,
             String content,
             Enrichment enrichment,
