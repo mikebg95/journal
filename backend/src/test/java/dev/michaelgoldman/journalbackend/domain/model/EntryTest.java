@@ -22,7 +22,7 @@ class EntryTest {
     private static final Long VALID_VERSION = 3L;
     private static final String VALID_TITLE = "A valid title";
     private static final String VALID_CONTENT = "This is an example of some valid content.";
-    private static final Enrichment VALID_ENRICHMENT = Enrichment.of(
+    private static final Enrichment VALID_ENRICHMENT = Enrichment.fromModel(
             "A short summary of the entry",
             List.of("work", "health"),
             List.of("Clean the house", "Call the dentist"),
@@ -140,7 +140,7 @@ class EntryTest {
     @Test
     void whenEditedWithUncleanValues_shouldCleanThemAndUseNewValues() {
         Entry oldEntry = entryWith(VALID_ENRICHMENT, T2, T3);
-        Enrichment newEnrichment = Enrichment.of("New summary", List.of("z"), List.of("9"), "SAD");
+        Enrichment newEnrichment = Enrichment.fromModel("New summary", List.of("z"), List.of("9"), "SAD");
 
         Entry newEntry = oldEntry.withEdit("   Modified title   ", "   Modified content   ", newEnrichment, T4);
 

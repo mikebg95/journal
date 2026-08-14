@@ -32,7 +32,7 @@ public record Enrichment(
         todos = List.copyOf(todos);
     }
 
-    public static Enrichment of(
+    public static Enrichment fromModel(
             @Nullable String uncleanSummary,
             @Nullable List<String> uncleanTags,
             @Nullable List<String> uncleanTodos,
@@ -41,6 +41,18 @@ public record Enrichment(
         Set<Tag> tags = cleanTags(uncleanTags);
         List<Todo> todos = cleanTodos(uncleanTodos);
         Mood mood = cleanMood(uncleanMood);
+
+        return new Enrichment(summary, tags, todos, mood);
+    }
+
+    public static Enrichment fromEdit(
+            @Nullable String uncleanSummary,
+            @Nullable List<String> uncleanTags,
+            @Nullable List<String> uncleanTodos,
+            @Nullable Mood mood) {
+        String summary = cleanSummary(uncleanSummary);
+        Set<Tag> tags = cleanTags(uncleanTags);
+        List<Todo> todos = cleanTodos(uncleanTodos);
 
         return new Enrichment(summary, tags, todos, mood);
     }

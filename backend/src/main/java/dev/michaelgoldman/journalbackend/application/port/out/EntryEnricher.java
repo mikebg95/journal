@@ -4,5 +4,8 @@ import dev.michaelgoldman.journalbackend.domain.exception.EnrichmentFailedExcept
 import dev.michaelgoldman.journalbackend.domain.model.Enrichment;
 
 public interface EntryEnricher {
-    Enrichment enrich(String title, String content) throws EnrichmentFailedException;
+    /**
+     * @throws EnrichmentFailedException if the model call fails, times out, or returns unusable output
+     */
+    Enrichment enrich(String title, String content);
 }

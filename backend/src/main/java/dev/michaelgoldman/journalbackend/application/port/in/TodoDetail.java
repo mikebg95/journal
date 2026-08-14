@@ -1,4 +1,4 @@
-package dev.michaelgoldman.journalbackend.application.port.out;
+package dev.michaelgoldman.journalbackend.application.port.in;
 
 import dev.michaelgoldman.journalbackend.domain.model.Mood;
 import java.time.Instant;

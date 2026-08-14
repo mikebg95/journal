@@ -60,7 +60,8 @@ class EnrichmentTest {
     @NullSource
     @ValueSource(strings = {"", "   ", "\t"})
     void whenBlankSummaryPassed_shouldReturnNullSummary(String value) {
-        assertNull(Enrichment.of(value, VALID_TAGS, VALID_TODOS, VALID_MOOD).summary());
+        assertNull(
+                Enrichment.fromModel(value, VALID_TAGS, VALID_TODOS, VALID_MOOD).summary());
     }
 
     @Test
@@ -69,17 +70,18 @@ class EnrichmentTest {
         String paddedButValid = " ".repeat(600) + "a".repeat(50) + "\t" + "a".repeat(35);
         String tooLong = ("a").repeat(SUMMARY_CHAR_LIMIT + 1);
 
-        assertNotNull(
-                Enrichment.of(atLimit, VALID_TAGS, VALID_TODOS, VALID_MOOD).summary());
-        assertNotNull(Enrichment.of(paddedButValid, VALID_TAGS, VALID_TODOS, VALID_MOOD)
+        assertNotNull(Enrichment.fromModel(atLimit, VALID_TAGS, VALID_TODOS, VALID_MOOD)
                 .summary());
-        assertNull(Enrichment.of(tooLong, VALID_TAGS, VALID_TODOS, VALID_MOOD).summary());
+        assertNotNull(Enrichment.fromModel(paddedButValid, VALID_TAGS, VALID_TODOS, VALID_MOOD)
+                .summary());
+        assertNull(Enrichment.fromModel(tooLong, VALID_TAGS, VALID_TODOS, VALID_MOOD)
+                .summary());
     }
 
     @Test
     void whenPassingBlankTagValues_shouldReturnSetWithoutBlank() {
         List<String> listWithBlankTags = List.of("0", "   ", "1", "2", "", "3", "\t", "4");
-        Set<Tag> tags = Enrichment.of(VALID_SUMMARY, listWithBlankTags, VALID_TODOS, VALID_MOOD)
+        Set<Tag> tags = Enrichment.fromModel(VALID_SUMMARY, listWithBlankTags, VALID_TODOS, VALID_MOOD)
                 .tags();
 
         assertEquals(Set.of(new Tag("0"), new Tag("1"), new Tag("2"), new Tag("3"), new Tag("4")), tags);
@@ -87,8 +89,8 @@ class EnrichmentTest {
 
     @Test
     void whenTagsAreMissing_shouldReturnEmptySet() {
-        Set<Tag> tags =
-                Enrichment.of(VALID_SUMMARY, null, VALID_TODOS, VALID_MOOD).tags();
+        Set<Tag> tags = Enrichment.fromModel(VALID_SUMMARY, null, VALID_TODOS, VALID_MOOD)
+                .tags();
 
         assertTrue(tags.isEmpty());
     }
@@ -97,7 +99,7 @@ class EnrichmentTest {
     void whenDuplicateTags_duplicatesShouldNotUseUpTheLimit() {
         List<String> tooLongListWithDuplicateTags =
                 List.of("0", "1", "1", "1", "2", "2", "3", "4", "4", "5", "6", "7", "8", "9", "10", "11");
-        Set<Tag> tags = Enrichment.of(VALID_SUMMARY, tooLongListWithDuplicateTags, VALID_TODOS, VALID_MOOD)
+        Set<Tag> tags = Enrichment.fromModel(VALID_SUMMARY, tooLongListWithDuplicateTags, VALID_TODOS, VALID_MOOD)
                 .tags();
 
         assertEquals(
@@ -118,7 +120,7 @@ class EnrichmentTest {
     @Test
     void whenPassingBlankTodoValues_shouldReturnListWithoutBlank() {
         List<String> listWithBlankTodos = List.of("0", "   ", "1", "2", "", "3", "\t", "4");
-        List<Todo> todos = Enrichment.of(VALID_SUMMARY, VALID_TAGS, listWithBlankTodos, VALID_MOOD)
+        List<Todo> todos = Enrichment.fromModel(VALID_SUMMARY, VALID_TAGS, listWithBlankTodos, VALID_MOOD)
                 .todos();
 
         assertEquals(List.of(new Todo("0"), new Todo("1"), new Todo("2"), new Todo("3"), new Todo("4")), todos);
@@ -126,7 +128,7 @@ class EnrichmentTest {
 
     @Test
     void whenTodosAreMissing_shouldReturnEmptyList() {
-        assertTrue(Enrichment.of(VALID_SUMMARY, VALID_TAGS, null, VALID_MOOD)
+        assertTrue(Enrichment.fromModel(VALID_SUMMARY, VALID_TAGS, null, VALID_MOOD)
                 .todos()
                 .isEmpty());
     }
@@ -137,7 +139,7 @@ class EnrichmentTest {
                 "0", "0", "1", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",
                 "17", "18", "19", "20", "21");
 
-        List<Todo> todos = Enrichment.of(VALID_SUMMARY, VALID_TAGS, tooLongListWithDuplicateTodos, VALID_MOOD)
+        List<Todo> todos = Enrichment.fromModel(VALID_SUMMARY, VALID_TAGS, tooLongListWithDuplicateTodos, VALID_MOOD)
                 .todos();
 
         assertEquals(
@@ -181,5 +183,14 @@ class EnrichmentTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Enrichment(VALID_SUMMARY, Set.of(), List.of(new Todo("0"), new Todo("0")), Mood.HAPPY));
+    }
+
+    @Test
+    void should_keepMoodAsGiven_when_builtFromEdit() {
+        Mood mood = Mood.SAD;
+        assertEquals(
+                mood,
+                Enrichment.fromEdit(VALID_SUMMARY, VALID_TAGS, VALID_TODOS, mood)
+                        .mood());
     }
 }
