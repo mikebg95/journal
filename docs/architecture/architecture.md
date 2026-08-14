@@ -78,11 +78,14 @@ This document walks the seven architecture decisions for P3, comparing each agai
 
 **P2:** Recipe data is held in a Recipe object, so not Transaction Script. Logic mostly lives in service methods, but some lives in the domain object (e.g. re-numbering steps when a step is added or removed). So mostly Anemic, with some rich-domain aspects.
 
-**P3:** Entry data is held in an Entry object, so not Transaction Script. Most logic lives in the service (AI call, find-or-create for tags, capping tag count, the save flow) — because it needs the database or the external AI, so it cannot live in an object. Some logic lives in the domain objects: `Tag.of()` cleans and validates itself (trim, lowercase, not blank), and Mood is a fixed enum. So mostly Anemic, with small rich touches — the same shape as P2.
+**P3:** Entry data is held in an Entry object, so not Transaction Script. **Orchestration** lives in the application service (the AI call, find-or-create for tags, the save flow) — because it needs the database or the external AI, so it cannot live in an object. **The data contract lives in the domain objects**, and this is where P3 moved past P2: `Tag`, `Todo`, `Entry` and `Enrichment` each enforce their own canonical form and their own limits in the constructor, so an invalid one cannot be built by any code path; `Mood` is a fixed enum, so an invalid mood is unrepresentable; and `AnalysisStatus` is derived in `Entry` from `analysedAt` versus `lastUpdated`, so no caller can compute it differently.
+
+So: **logic-in-services for orchestration, rich objects for identity and validity.** Not full DDD, but further from anemic than P2 was — and the reason is ADR-0006. Because tags arrive from two sources (the user and the model), the cleaning rules cannot live at the request boundary; they have to live in the type itself, which is what pulled the rest of the model along with it.
 
 **Rejected:**
 
-- **Full DDD** — DDD earns its cost when the domain has rules that are costly to break and owned by a single object, and enough of them that rich objects prevent real bugs. P3 has essentially one such rule: a tag must always be clean, because a messy tag breaks the shared-tag/uniqueness system. That one rule is made rich (`Tag.of()`). Everything else is either trivial (the tag-count cap) or plumbing (AI, database) that cannot live in an object anyway. Not enough object-owned rules to justify full DDD → Anemic with rich touches.
+- **Full DDD** — DDD earns its cost when the domain has rules that are costly to break, are owned by a single object, and are numerous enough that rich objects prevent real bugs. P3's rules are all of the same *kind* — "this value is canonical and within its limits" — so they are cheap to enforce in constructors and factories, and they need no aggregates, no repositories-in-the-domain, no domain events and no ubiquitous-language ceremony. The invariants are rich; the structure around them is not.
+- **Fully anemic (plain data holders, all rules in the service)** — rejected because tag identity has two entry points. Cleaning in the service would mean the rule is enforced only on the paths that remember to call it, and the path that forgets is the one nobody tested. An invariant enforced by construction beats ten enforced by convention.
 
 ---
 
@@ -125,7 +128,7 @@ This document walks the seven architecture decisions for P3, comparing each agai
 | 3 — Hosting | Local (cloud deferred) | No |
 | 4 — Communication | Synchronous (deliberate compromise) | No |
 | 5 — Read/Write model | Single model | No |
-| 6 — Domain model | Anemic with rich touches | No |
+| 6 — Domain model | Orchestration in services, invariants in the model | No |
 | 7 — Data | Relational, many-to-many | **Changed** — shared tags |
 
 Two levels change; five stay the same. Both changes trace to a concrete pressure — the LLM forces hexagonal, and shared tags force a many-to-many relationship.

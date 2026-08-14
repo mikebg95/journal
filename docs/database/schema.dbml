@@ -6,6 +6,12 @@
 //   not in this diagram (dbdiagram does not model CHECK constraints).
 // - Tags are shared across entries (many-to-many via entries_tags).
 // - `version` supports optimistic locking (JPA @Version).
+// - IMPORTANT — tag uniqueness is NOT the plain column constraint shown below.
+//   dbdiagram cannot express it, so `unique` here is a stand-in. The real rule is
+//   a unique index on the NORMALISED value, created in V2:
+//       CREATE UNIQUE INDEX tags_value_normalized_key ON tags (lower(btrim(value)));
+//   That index is where tag identity lives (ADR-0006). Reading `unique` as a plain
+//   column constraint is the exact mistake the data contract exists to prevent.
 
 Table entries {
   id bigint [primary key, increment]

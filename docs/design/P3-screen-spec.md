@@ -16,7 +16,7 @@ Twenty-one frames across seven pages. Build order is the order below.
 | `id` | bigint | no | system |
 | `version` | bigint | no | system — optimistic locking |
 | `title` | varchar(100) | **no** | user |
-| `content` | text, <20 000 | **no** | user |
+| `content` | text, ≤ 20 000 | **no** | user |
 | `summary` | varchar(500) | yes | AI |
 | `mood` | enum(6) | yes | AI |
 | `created_at` | timestamp | no | system |
@@ -25,7 +25,7 @@ Twenty-one frames across seven pages. Build order is the order below.
 | `tags` | set of varchar(50), lowercase | may be empty | AI |
 | `todos` | ordered list of varchar(1000) | may be empty | AI |
 
-**Derived states.** Computed in the domain, exposed as booleans by the API. The UI never compares timestamps itself.
+**Derived states.** Computed in the domain and exposed by the API as a single `analysisStatus` enum — `NOT_ANALYSED` · `ANALYSED` · `OUT_OF_DATE`. The UI never compares timestamps itself, and never combines two booleans to work out which of the three it is.
 
 | State | Rule | Badge |
 |---|---|---|
