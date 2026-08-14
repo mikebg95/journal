@@ -1,14 +1,17 @@
 package dev.michaelgoldman.journalbackend.domain.model;
 
-import org.jspecify.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 
-public record Enrichment(@Nullable String summary, Set<Tag> tags, List<Todo> todos, @Nullable Mood mood) {
+public record Enrichment(
+        @Nullable String summary,
+        Set<Tag> tags,
+        List<Todo> todos,
+        @Nullable Mood mood) {
 
     private static final int SUMMARY_CHAR_LIMIT = 500;
     private static final int TAGS_LIMIT = 10;
@@ -29,7 +32,11 @@ public record Enrichment(@Nullable String summary, Set<Tag> tags, List<Todo> tod
         todos = List.copyOf(todos);
     }
 
-    public static Enrichment of(@Nullable String uncleanSummary, @Nullable List<String> uncleanTags, @Nullable List<String> uncleanTodos, @Nullable String uncleanMood) {
+    public static Enrichment of(
+            @Nullable String uncleanSummary,
+            @Nullable List<String> uncleanTags,
+            @Nullable List<String> uncleanTodos,
+            @Nullable String uncleanMood) {
         String summary = cleanSummary(uncleanSummary);
         Set<Tag> tags = cleanTags(uncleanTags);
         List<Todo> todos = cleanTodos(uncleanTodos);

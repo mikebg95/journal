@@ -6,12 +6,11 @@ import java.util.regex.Pattern;
 final class TextNormaliser {
     private static final Pattern WHITESPACE_RUN = Pattern.compile("\\s+");
 
-    private TextNormaliser() {
-    }
+    private TextNormaliser() {}
 
     static String toSingleLine(String text) {
-        return WHITESPACE_RUN.matcher(
-                        Normalizer.normalize(text, Normalizer.Form.NFC).strip())
+        return WHITESPACE_RUN
+                .matcher(Normalizer.normalize(text, Normalizer.Form.NFC).strip())
                 .replaceAll(" ");
     }
 }

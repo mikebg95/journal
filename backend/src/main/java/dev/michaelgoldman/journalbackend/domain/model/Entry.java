@@ -1,10 +1,9 @@
 package dev.michaelgoldman.journalbackend.domain.model;
 
-import org.jspecify.annotations.Nullable;
-
 import java.text.Normalizer;
 import java.time.Instant;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
 public final class Entry {
     private static final int TITLE_CHAR_LIMIT = 100;
@@ -19,14 +18,15 @@ public final class Entry {
     private final Instant lastUpdated;
     private final @Nullable Instant analysedAt;
 
-    Entry(@Nullable Long id,
-          @Nullable Long version,
-          String title,
-          String content,
-          Enrichment enrichment,
-          Instant createdAt,
-          Instant lastUpdated,
-          @Nullable Instant analysedAt) {
+    Entry(
+            @Nullable Long id,
+            @Nullable Long version,
+            String title,
+            String content,
+            Enrichment enrichment,
+            Instant createdAt,
+            Instant lastUpdated,
+            @Nullable Instant analysedAt) {
         Objects.requireNonNull(title, "title");
         Objects.requireNonNull(content, "content");
         Objects.requireNonNull(enrichment, "enrichment");
@@ -59,20 +59,43 @@ public final class Entry {
         String cleanedTitle = clean(uncleanTitle);
         String cleanedContent = clean(uncleanContent);
 
-        return new Entry(null, null, cleanedTitle, cleanedContent, Enrichment.empty(), createdAt, createdAt,null);
+        return new Entry(null, null, cleanedTitle, cleanedContent, Enrichment.empty(), createdAt, createdAt, null);
     }
 
     public Entry withAnalysis(Enrichment enrichment, Instant analysedAt) {
-        return new Entry(this.id, this.version, this.title, this.content, enrichment, this.createdAt, this.lastUpdated, analysedAt);
+        return new Entry(
+                this.id,
+                this.version,
+                this.title,
+                this.content,
+                enrichment,
+                this.createdAt,
+                this.lastUpdated,
+                analysedAt);
     }
 
-    public static Entry fromStorage(Long id, Long version, String title, String content, Enrichment enrichment, Instant createdAt, Instant lastUpdated, @Nullable Instant analysedAt) {
+    public static Entry fromStorage(
+            Long id,
+            Long version,
+            String title,
+            String content,
+            Enrichment enrichment,
+            Instant createdAt,
+            Instant lastUpdated,
+            @Nullable Instant analysedAt) {
         return new Entry(id, version, title, content, enrichment, createdAt, lastUpdated, analysedAt);
     }
 
     public Entry withEdit(String uncleanTitle, String uncleanContent, Enrichment enrichment, Instant editedAt) {
-        return new Entry(this.id, this.version, clean(uncleanTitle), clean(uncleanContent), enrichment,
-                this.createdAt, editedAt, this.analysedAt);
+        return new Entry(
+                this.id,
+                this.version,
+                clean(uncleanTitle),
+                clean(uncleanContent),
+                enrichment,
+                this.createdAt,
+                editedAt,
+                this.analysedAt);
     }
 
     private static String clean(String unclean) {

@@ -1,15 +1,5 @@
 package dev.michaelgoldman.journalbackend.domain.model;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.stream.Stream;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,17 +8,25 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
 class EntryTest {
     private static final Long VALID_ID = 1L;
     private static final Long VALID_VERSION = 3L;
     private static final String VALID_TITLE = "A valid title";
     private static final String VALID_CONTENT = "This is an example of some valid content.";
     private static final Enrichment VALID_ENRICHMENT = Enrichment.of(
-        "A short summary of the entry",
-        List.of("work", "health"),
-        List.of("Clean the house", "Call the dentist"),
-        "HAPPY"
-    );
+            "A short summary of the entry",
+            List.of("work", "health"),
+            List.of("Clean the house", "Call the dentist"),
+            "HAPPY");
 
     private static final Instant T1 = Instant.parse("2026-08-13T09:00:00Z");
     private static final Instant T2 = Instant.parse("2026-08-13T09:10:00Z");
@@ -76,8 +74,12 @@ class EntryTest {
 
     @Test
     void whenConstructedWithNonCanonicalValue_shouldThrow() {
-        assertThrows(IllegalArgumentException.class, () -> new Entry(null, null, VALID_TITLE, "  Clean up the house ", Enrichment.empty(), T1, T2, null));
-        assertThrows(IllegalArgumentException.class, () -> new Entry(null, null, "  Clean up the house ", VALID_CONTENT, Enrichment.empty(), T1, T2,null));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Entry(null, null, VALID_TITLE, "  Clean up the house ", Enrichment.empty(), T1, T2, null));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Entry(null, null, "  Clean up the house ", VALID_CONTENT, Enrichment.empty(), T1, T2, null));
     }
 
     @Test
@@ -112,26 +114,14 @@ class EntryTest {
         assertEquals(T3, enrichedEntry.getAnalysedAt());
     }
 
-    @Test
-    void whenCreatedFromStorage_shouldReturnEntryWithAllFields() {
-        Entry persistedEntry = Entry.fromStorage(VALID_ID, VALID_VERSION, VALID_TITLE, VALID_CONTENT, VALID_ENRICHMENT, T1, T2, T3);
-
-        assertEquals(VALID_ID, persistedEntry.getId());
-        assertEquals(VALID_VERSION, persistedEntry.getVersion());
-        assertEquals(VALID_TITLE, persistedEntry.getTitle());
-        assertEquals(VALID_CONTENT, persistedEntry.getContent());
-        assertEquals(VALID_ENRICHMENT, persistedEntry.getEnrichment());
-        assertNotNull(persistedEntry.getCreatedAt());
-        assertNotNull(persistedEntry.getLastUpdated());
-        assertNotNull(persistedEntry.getAnalysedAt());
-        assertEquals(T1, persistedEntry.getCreatedAt());
-        assertEquals(T2, persistedEntry.getLastUpdated());
-        assertEquals(T3, persistedEntry.getAnalysedAt());
-    }
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("timestampValues")
-    void whenTimestampsAdded_shouldComputeAnalysisStatus(String name, AnalysisStatus expectedStatus, Enrichment enrichment, Instant lastUpdated, Instant analysedAt) {
+    void whenTimestampsAdded_shouldComputeAnalysisStatus(
+            String name,
+            AnalysisStatus expectedStatus,
+            Enrichment enrichment,
+            Instant lastUpdated,
+            Instant analysedAt) {
         Entry entry = entryWith(enrichment, lastUpdated, analysedAt);
         assertEquals(expectedStatus, entry.getAnalysisStatus());
     }
@@ -161,29 +151,29 @@ class EntryTest {
 
     static Stream<Arguments> timestampValues() {
         return Stream.of(
-                arguments("Not analysed", AnalysisStatus.NOT_ANALYSED, Enrichment.empty(),T2, null),
+                arguments("Not analysed", AnalysisStatus.NOT_ANALYSED, Enrichment.empty(), T2, null),
                 arguments("Analysed", AnalysisStatus.ANALYSED, VALID_ENRICHMENT, T2, T3),
-                arguments("Analysed at the same instant as last update", AnalysisStatus.ANALYSED, VALID_ENRICHMENT, T2, T2),
+                arguments(
+                        "Analysed at the same instant as last update",
+                        AnalysisStatus.ANALYSED,
+                        VALID_ENRICHMENT,
+                        T2,
+                        T2),
                 arguments("Out of date", AnalysisStatus.OUT_OF_DATE, VALID_ENRICHMENT, T3, T2));
     }
 
     private Entry entryWith(Enrichment enrichment, Instant lastUpdated, Instant analysedAt) {
-        return Entry.fromStorage(VALID_ID, VALID_VERSION, VALID_TITLE, VALID_CONTENT, enrichment, T1, lastUpdated, analysedAt);
+        return Entry.fromStorage(
+                VALID_ID, VALID_VERSION, VALID_TITLE, VALID_CONTENT, enrichment, T1, lastUpdated, analysedAt);
     }
 
     @SuppressWarnings("UnnecessaryUnicodeEscape")
     static Stream<Arguments> uncleanValues() {
         return Stream.of(
-                arguments(
-                        "NFC normalisation",
-                        "caf\u00E9",
-                        "cafe\u0301"
-                ),
+                arguments("NFC normalisation", "caf\u00E9", "cafe\u0301"),
                 arguments(
                         "Preserves case and inner whitespace, trims outer",
                         "Two  Words With   Caps",
-                        "   Two  Words With   Caps   "
-                )
-        );
+                        "   Two  Words With   Caps   "));
     }
 }

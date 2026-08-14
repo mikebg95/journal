@@ -1,12 +1,5 @@
 package dev.michaelgoldman.journalbackend.architecture;
 
-import com.tngtech.archunit.core.importer.ImportOption;
-import com.tngtech.archunit.core.importer.Location;
-import com.tngtech.archunit.junit.AnalyzeClasses;
-import com.tngtech.archunit.junit.ArchTest;
-import com.tngtech.archunit.lang.ArchRule;
-import dev.michaelgoldman.journalbackend.JournalbackendApplication;
-
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
@@ -18,10 +11,16 @@ import static com.tngtech.archunit.library.GeneralCodingRules.NO_CLASSES_SHOULD_
 import static com.tngtech.archunit.library.GeneralCodingRules.NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.core.importer.Location;
+import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.lang.ArchRule;
+import dev.michaelgoldman.journalbackend.JournalbackendApplication;
+
 @AnalyzeClasses(
         packagesOf = JournalbackendApplication.class,
-        importOptions = { ImportOption.DoNotIncludeTests.class, ArchitectureTest.DoNotIncludeGeneratedApi.class }
-)
+        importOptions = {ImportOption.DoNotIncludeTests.class, ArchitectureTest.DoNotIncludeGeneratedApi.class})
 class ArchitectureTest {
 
     private static final String ROOT = "dev.michaelgoldman.journalbackend";
@@ -59,22 +58,23 @@ class ArchitectureTest {
      * Emptiness of the layers that must exist is caught by the per-layer rules below instead.
      */
     @ArchTest
-    static final ArchRule onion_architecture_should_be_respected =
-            onionArchitecture()
-                    .domainModels(DOMAIN)
-                    .applicationServices(APPLICATION)
-                    .adapter("web", WEB_ADAPTER)
-                    .adapter("persistence", PERSISTENCE_ADAPTER)
-                    .adapter("ai", AI_ADAPTER)
-                    .withOptionalLayers(true);
+    static final ArchRule onion_architecture_should_be_respected = onionArchitecture()
+            .domainModels(DOMAIN)
+            .applicationServices(APPLICATION)
+            .adapter("web", WEB_ADAPTER)
+            .adapter("persistence", PERSISTENCE_ADAPTER)
+            .adapter("ai", AI_ADAPTER)
+            .withOptionalLayers(true);
 
     // TODO(phase-4): drop allowEmptyShould once the domain model exists
     @ArchTest
-    static final ArchRule domain_should_only_depend_on_itself_and_the_jdk =
-            classes()
-                    .that().resideInAPackage(DOMAIN)
-                    .should().onlyDependOnClassesThat().resideInAnyPackage(DOMAIN, JDK, NULLNESS)
-                    .allowEmptyShould(true);
+    static final ArchRule domain_should_only_depend_on_itself_and_the_jdk = classes()
+            .that()
+            .resideInAPackage(DOMAIN)
+            .should()
+            .onlyDependOnClassesThat()
+            .resideInAnyPackage(DOMAIN, JDK, NULLNESS)
+            .allowEmptyShould(true);
 
     /**
      * Deliberately narrower than the domain rule, and widened one package at a time:
@@ -83,11 +83,13 @@ class ArchitectureTest {
      */
     // TODO(phase-4): drop allowEmptyShould once the application services exist
     @ArchTest
-    static final ArchRule application_should_only_depend_on_domain_and_the_jdk =
-            classes()
-                    .that().resideInAPackage(APPLICATION)
-                    .should().onlyDependOnClassesThat().resideInAnyPackage(DOMAIN, APPLICATION, JDK, NULLNESS)
-                    .allowEmptyShould(true);
+    static final ArchRule application_should_only_depend_on_domain_and_the_jdk = classes()
+            .that()
+            .resideInAPackage(APPLICATION)
+            .should()
+            .onlyDependOnClassesThat()
+            .resideInAnyPackage(DOMAIN, APPLICATION, JDK, NULLNESS)
+            .allowEmptyShould(true);
 
     /**
      * Sliced at the first level below the root, so domain / application / adapter are the units.
@@ -96,45 +98,54 @@ class ArchitectureTest {
      */
     @ArchTest
     static final ArchRule packages_should_be_free_of_cycles =
-            slices()
-                    .matching(ROOT + ".(*)..")
-                    .should().beFreeOfCycles();
+            slices().matching(ROOT + ".(*)..").should().beFreeOfCycles();
 
     @ArchTest
-    static final ArchRule jpa_should_only_be_used_in_the_persistence_adapter =
-            noClasses()
-                    .that().resideOutsideOfPackage(PERSISTENCE_ADAPTER)
-                    .should().dependOnClassesThat().resideInAnyPackage("jakarta.persistence..");
+    static final ArchRule jpa_should_only_be_used_in_the_persistence_adapter = noClasses()
+            .that()
+            .resideOutsideOfPackage(PERSISTENCE_ADAPTER)
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage("jakarta.persistence..");
 
     @ArchTest
-    static final ArchRule spring_data_should_only_be_used_in_the_persistence_adapter =
-            noClasses()
-                    .that().resideOutsideOfPackage(PERSISTENCE_ADAPTER)
-                    .should().dependOnClassesThat().resideInAnyPackage("org.springframework.data..");
+    static final ArchRule spring_data_should_only_be_used_in_the_persistence_adapter = noClasses()
+            .that()
+            .resideOutsideOfPackage(PERSISTENCE_ADAPTER)
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage("org.springframework.data..");
 
     @ArchTest
-    static final ArchRule spring_ai_should_only_be_used_in_the_ai_adapter =
-            noClasses()
-                    .that().resideOutsideOfPackage(AI_ADAPTER)
-                    .should().dependOnClassesThat().resideInAnyPackage("org.springframework.ai..");
+    static final ArchRule spring_ai_should_only_be_used_in_the_ai_adapter = noClasses()
+            .that()
+            .resideOutsideOfPackage(AI_ADAPTER)
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage("org.springframework.ai..");
 
     @ArchTest
-    static final ArchRule spring_web_and_generated_api_types_should_only_be_used_in_the_web_adapter =
-            noClasses()
-                    .that().resideOutsideOfPackage(WEB_ADAPTER)
-                    .should().dependOnClassesThat()
-                    .resideInAnyPackage("org.springframework.web..", GENERATED_API);
+    static final ArchRule spring_web_and_generated_api_types_should_only_be_used_in_the_web_adapter = noClasses()
+            .that()
+            .resideOutsideOfPackage(WEB_ADAPTER)
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage("org.springframework.web..", GENERATED_API);
 
     /**
      * Covers both annotations: the wrong import compiles and does nothing useful here.
      * The transaction wraps the millisecond database write only, never the AI call.
      */
     @ArchTest
-    static final ArchRule transactional_should_only_be_used_in_the_persistence_adapter =
-            noClasses()
-                    .that().resideOutsideOfPackage(PERSISTENCE_ADAPTER)
-                    .should().dependOnClassesThat().haveFullyQualifiedName(SPRING_TRANSACTIONAL)
-                    .orShould().dependOnClassesThat().haveFullyQualifiedName(JAKARTA_TRANSACTIONAL);
+    static final ArchRule transactional_should_only_be_used_in_the_persistence_adapter = noClasses()
+            .that()
+            .resideOutsideOfPackage(PERSISTENCE_ADAPTER)
+            .should()
+            .dependOnClassesThat()
+            .haveFullyQualifiedName(SPRING_TRANSACTIONAL)
+            .orShould()
+            .dependOnClassesThat()
+            .haveFullyQualifiedName(JAKARTA_TRANSACTIONAL);
 
     /**
      * Spring's proxy only advises public methods, so @Transactional on anything else is
@@ -142,28 +153,28 @@ class ArchitectureTest {
      */
     // TODO(phase-5): drop allowEmptyShould once the persistence adapter exists
     @ArchTest
-    static final ArchRule transactional_methods_should_be_public =
-            methods()
-                    .that().areAnnotatedWith(SPRING_TRANSACTIONAL)
-                    .or().areAnnotatedWith(JAKARTA_TRANSACTIONAL)
-                    .should().bePublic()
-                    .allowEmptyShould(true);
+    static final ArchRule transactional_methods_should_be_public = methods()
+            .that()
+            .areAnnotatedWith(SPRING_TRANSACTIONAL)
+            .or()
+            .areAnnotatedWith(JAKARTA_TRANSACTIONAL)
+            .should()
+            .bePublic()
+            .allowEmptyShould(true);
 
     // TODO(phase-4): drop allowEmptyShould once the ports exist
     @ArchTest
     static final ArchRule ports_should_be_interfaces =
-            classes()
-                    .that().resideInAPackage(PORTS)
-                    .should().beInterfaces()
-                    .allowEmptyShould(true);
+            classes().that().resideInAPackage(PORTS).should().beInterfaces().allowEmptyShould(true);
 
     // TODO(phase-5): drop allowEmptyShould once the persistence adapter exists
     @ArchTest
-    static final ArchRule outbound_ports_should_only_be_implemented_by_outbound_adapters =
-            classes()
-                    .that().implement(resideInAPackage(OUTBOUND_PORTS))
-                    .should().resideInAPackage(OUTBOUND_ADAPTERS)
-                    .allowEmptyShould(true);
+    static final ArchRule outbound_ports_should_only_be_implemented_by_outbound_adapters = classes()
+            .that()
+            .implement(resideInAPackage(OUTBOUND_PORTS))
+            .should()
+            .resideInAPackage(OUTBOUND_ADAPTERS)
+            .allowEmptyShould(true);
 
     @ArchTest
     static final ArchRule dependencies_should_not_be_field_injected = NO_CLASSES_SHOULD_USE_FIELD_INJECTION;

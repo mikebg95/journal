@@ -1,14 +1,16 @@
 package dev.michaelgoldman.journalbackend.domain.model;
 
-import org.jspecify.annotations.Nullable;
-
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 
 public record Todo(String text) {
     private static final int CHAR_LIMIT = 1000;
 
     public Todo {
-        if (text == null || !text.equals(TextNormaliser.toSingleLine(text)) || text.isBlank() || text.length() > CHAR_LIMIT) {
+        if (text == null
+                || !text.equals(TextNormaliser.toSingleLine(text))
+                || text.isBlank()
+                || text.length() > CHAR_LIMIT) {
             throw new IllegalArgumentException("Todo text is not canonical");
         }
     }
