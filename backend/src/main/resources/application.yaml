@@ -2,6 +2,9 @@ spring:
   application:
     name: journalbackend
 
+  jpa:
+    open-in-view: false
+
   ai:
     chat:
       client:
@@ -12,11 +15,11 @@ spring:
       chat:
         model: claude-haiku-4-5
         temperature: 0.2
-        max-tokens: 500
+        max-tokens: 5000
 
     openai:
       api-key: ${OPENAI_API_KEY}
       chat:
         model: gpt-4o-mini
         temperature: 0.2
-        max-tokens: 500
+        max-tokens: 5000
