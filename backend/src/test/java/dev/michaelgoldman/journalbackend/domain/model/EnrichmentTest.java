@@ -186,7 +186,7 @@ class EnrichmentTest {
     }
 
     @Test
-    void should_keepMoodAsGiven_when_builtFromEdit() {
+    void whenBuiltFromEdit_shouldKeepMoodAsGiven() {
         Mood mood = Mood.SAD;
         assertEquals(
                 mood,
