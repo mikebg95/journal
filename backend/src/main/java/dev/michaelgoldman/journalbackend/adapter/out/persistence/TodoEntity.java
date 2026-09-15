@@ -13,7 +13,7 @@ import org.jspecify.annotations.Nullable;
 
 @Entity
 @Table(name = "todos")
-class Todo {
+class TodoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,11 +24,11 @@ class Todo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private @Nullable Entry entry;
+    private @Nullable EntryEntity entry;
 
-    protected Todo() {}
+    protected TodoEntity() {}
 
-    Todo(String value) {
+    TodoEntity(String value) {
         this.value = value;
     }
 
@@ -36,7 +36,7 @@ class Todo {
         return value;
     }
 
-    @Nullable Entry getEntry() {
+    @Nullable EntryEntity getEntry() {
         return entry;
     }
 
@@ -44,7 +44,7 @@ class Todo {
         this.value = value;
     }
 
-    void setEntry(@Nullable Entry entry) {
+    void setEntry(@Nullable EntryEntity entry) {
         this.entry = entry;
     }
 }

@@ -25,7 +25,7 @@ import org.jspecify.annotations.Nullable;
 
 @Entity
 @Table(name = "entries")
-class Entry {
+class EntryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,14 +46,14 @@ class Entry {
 
     @OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private List<Todo> todos = new ArrayList<>();
+    private List<TodoEntity> todos = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
             name = "entries_tags",
             joinColumns = @JoinColumn(name = "entry_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<Tag> tags = new HashSet<>();
+    private Set<TagEntity> tags = new HashSet<>();
 
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
@@ -68,9 +68,9 @@ class Entry {
     @Column(name = "analysed_at")
     private @Nullable Instant analysedAt;
 
-    protected Entry() {}
+    protected EntryEntity() {}
 
-    Entry(String title, String content, Instant createdAt, Instant lastUpdated) {
+    EntryEntity(String title, String content, Instant createdAt, Instant lastUpdated) {
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
@@ -97,11 +97,11 @@ class Entry {
         return summary;
     }
 
-    List<Todo> getTodos() {
+    List<TodoEntity> getTodos() {
         return List.copyOf(todos);
     }
 
-    Set<Tag> getTags() {
+    Set<TagEntity> getTags() {
         return Set.copyOf(tags);
     }
 
@@ -145,17 +145,17 @@ class Entry {
         this.analysedAt = analysedAt;
     }
 
-    void addTodo(Todo todo) {
+    void addTodo(TodoEntity todo) {
         this.todos.add(todo);
         todo.setEntry(this);
     }
 
-    void removeTodo(Todo todo) {
+    void removeTodo(TodoEntity todo) {
         this.todos.remove(todo);
         todo.setEntry(null);
     }
 
-    void replaceTags(Set<Tag> newTags) {
+    void replaceTags(Set<TagEntity> newTags) {
         this.tags.clear();
         this.tags.addAll(newTags);
     }

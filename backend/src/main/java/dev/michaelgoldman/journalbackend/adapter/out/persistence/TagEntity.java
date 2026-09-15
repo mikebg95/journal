@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tags")
-class Tag {
+class TagEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,13 +19,13 @@ class Tag {
     @Column(nullable = false, length = 50)
     private String value;
 
-    protected Tag() {}
+    protected TagEntity() {}
 
-    Tag(String value) {
+    TagEntity(String value) {
         this.value = value;
     }
 
-    String getValue() {
+    public String getValue() {
         return value;
     }
 
@@ -34,10 +34,10 @@ class Tag {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof Tag otherTag)) {
+        if (!(other instanceof TagEntity otherTagEntity)) {
             return false;
         }
-        return Objects.equals(value, otherTag.value);
+        return Objects.equals(value, otherTagEntity.value);
     }
 
     @Override

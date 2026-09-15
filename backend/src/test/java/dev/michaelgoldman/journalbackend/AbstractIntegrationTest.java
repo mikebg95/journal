@@ -7,4 +7,4 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles("test")
 @Import({TestcontainersConfiguration.class})
-abstract class AbstractIntegrationTest {}
+public abstract class AbstractIntegrationTest {}

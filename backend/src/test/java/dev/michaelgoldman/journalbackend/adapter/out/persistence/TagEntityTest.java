@@ -5,15 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-class TagTest {
+class TagEntityTest {
 
     @Test
     void whenValuesAreEqual_shouldBeEqualAndShareHashCode() {
-        Tag tag1 = new Tag("work");
-        Tag tag2 = new Tag("work");
-        boolean isEqual = tag1.equals(tag2);
+        TagEntity tagEntity1 = new TagEntity("work");
+        TagEntity tagEntity2 = new TagEntity("work");
+        boolean isEqual = tagEntity1.equals(tagEntity2);
 
         assertTrue(isEqual);
-        assertEquals(tag1.hashCode(), tag2.hashCode());
+        assertEquals(tagEntity1.hashCode(), tagEntity2.hashCode());
     }
 }
